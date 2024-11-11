@@ -1,5 +1,12 @@
 use anyhow::Result;
 use axum::{routing::get, Router};
+use opentelemetry::{trace::TracerProvider as _, KeyValue};
+use opentelemetry_otlp::WithExportConfig;
+use opentelemetry_sdk::{
+    runtime,
+    trace::{self, RandomIdGenerator, TracerProvider},
+    Resource,
+};
 use std::{net::SocketAddr, time::Duration};
 use tokio::time::{sleep, Instant};
 use tracing::{info, instrument, level_filters::LevelFilter, warn};
@@ -26,9 +33,15 @@ async fn main() -> Result<()> {
         .pretty()
         .with_filter(LevelFilter::WARN);
 
+    // opentelemetry tracing layer for tracing-subscriber
+    let provider = init_tracer()?;
+    let tracer = provider.tracer("ecosystem");
+    let opentelemetry = tracing_opentelemetry::layer().with_tracer(tracer);
+
     tracing_subscriber::registry()
         .with(console)
         .with(file)
+        .with(opentelemetry)
         .init();
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
@@ -59,4 +72,27 @@ async fn long_task() -> &'static str {
         "long_task has already completed"
     );
     "Hello world!"
+}
+
+fn init_tracer() -> Result<TracerProvider> {
+    let tracer_provider = opentelemetry_otlp::new_pipeline()
+        .tracing()
+        .with_exporter(
+            opentelemetry_otlp::new_exporter()
+                .tonic()
+                .with_endpoint("http://localhost:4317"),
+        )
+        .with_trace_config(
+            trace::Config::default()
+                .with_id_generator(RandomIdGenerator::default())
+                .with_max_events_per_span(32)
+                .with_max_attributes_per_span(64)
+                .with_resource(Resource::new(vec![KeyValue::new(
+                    "service.name",
+                    "axum-tracing",
+                )])),
+        )
+        .install_batch(runtime::Tokio)?;
+
+    Ok(tracer_provider)
 }

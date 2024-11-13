@@ -7,14 +7,10 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.93"
-axum = { version = "0.7.7", features = [
-  "http2",
-  "query",
-  "tracing",
-  "multipart",
-] }
+axum = { version = "0.7.7", features = ["http2", "query", "tracing", "multipart"] }
 chrono = { version = "0.4.38", features = ["serde"] }
 derive_builder = "0.20.2"
+derive_more = { version = "1.0.0", features = ["full"] }
 opentelemetry = "0.26.0"
 opentelemetry-otlp = { version = "0.26.0", features = ["tonic"] }
 opentelemetry_sdk = { version = "0.26.0", features = ["rt-tokio"] }

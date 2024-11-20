@@ -13,8 +13,10 @@ blake3 = "1.5.4"
 bytes = "1.8.0"
 chacha20poly1305 = "0.10.1"
 chrono = { version = "0.4.38", features = ["serde"] }
+dashmap = "6.1.0"
 derive_builder = "0.20.2"
 derive_more = { version = "1.0.0", features = ["full"] }
+futures = "0.3.31"
 http = "1.1.0"
 opentelemetry = "0.26.0"
 opentelemetry-otlp = { version = "0.26.0", features = ["tonic"] }
@@ -25,6 +27,7 @@ serde_with = "3.11.0"
 strum = { version = "0.26.3", features = ["derive"] }
 thiserror = "2.0.1"
 tokio = { version = "1.41.1", features = ["rt", "rt-multi-thread", "macros", "net", "fs"] }
+tokio-util = "0.7.12"
 tracing = "0.1.40"
 tracing-appender = "0.2.3"
 tracing-opentelemetry = "0.27.0"

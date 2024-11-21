@@ -10,6 +10,7 @@ use tokio_util::codec::{Framed, LinesCodec};
 use tracing::{info, level_filters::LevelFilter, warn};
 use tracing_subscriber::{fmt::Layer, layer::SubscriberExt, util::SubscriberInitExt, Layer as _};
 
+const MAX_MESSAGE: usize = 128;
 #[derive(Debug, Default)]
 struct State {
     peers: DashMap<SocketAddr, mpsc::Sender<Arc<Message>>>,
@@ -106,7 +107,7 @@ impl State {
         username: String,
         stream: Framed<TcpStream, LinesCodec>,
     ) -> Peer {
-        let (tx, mut rx) = mpsc::channel(200);
+        let (tx, mut rx) = mpsc::channel(MAX_MESSAGE);
         self.peers.insert(addr, tx);
 
         let (mut stream_sender, stream_receiver) = stream.split();
@@ -137,6 +138,7 @@ impl Message {
         let content = format!("{} has left the chat", username);
         Self::UserLeft(content)
     }
+
     fn chat(sender: impl Into<String>, content: impl Into<String>) -> Self {
         Self::Chat {
             sender: sender.into(),

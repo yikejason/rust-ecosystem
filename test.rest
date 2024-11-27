@@ -8,3 +8,15 @@ Content-Type: application/json
 {
   "skills": ["Ruby"]
 }
+
+### url shortener
+
+POST http://localhost:9876/
+Content-Type: application/json
+
+{
+  "url": "https://neon.tech/postgresql/postgresql-tutorial/postgresql-upsert"
+}
+
+### url redirect
+GET http://localhost:9876/sqjkEA

@@ -2,6 +2,7 @@ use std::net::SocketAddr;
 
 use anyhow::Result;
 use axum::{
+    debug_handler,
     extract::{Path, State},
     response::IntoResponse,
     routing::{get, post},
@@ -76,6 +77,7 @@ async fn redirect(
     Ok((StatusCode::PERMANENT_REDIRECT, headers))
 }
 
+#[debug_handler]
 async fn shorten(
     State(state): State<AppState>,
     Json(data): Json<ShortenReq>, // body executor only one  put it final
